@@ -1,4 +1,4 @@
-call plug#begin('~\AppData\Local\nvim\plugged')
+call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
@@ -13,7 +13,16 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'dense-analysis/ale'
 Plug 'simnalamburt/vim-mundo'
 Plug 'kien/ctrlp.vim'
+
+" Python plugins
+Plug 'deoplete-plugins/deoplete-jedi'
+Plug 'Vimjas/vim-python-pep8-indent'
+Plug 'numirias/semshi'
+
+" Colorschemes
 Plug 'zeis/vim-kolor'
+Plug 'sonph/onehalf', {'rtp': 'vim'}
+Plug 'jacoborus/tender.vim'
 
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', {'do':':UpdateRemotePlugins'}
@@ -22,13 +31,14 @@ else
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
-
 call plug#end()
+
+let g:python3_host_prog = '/usr/bin/python3'
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " Vim-Go Configurations
 """"""""""""""""""""""""""""""""""""""""""""""""
-let g:go_fmt_command = "goimports"
+"let g:go_fmt_command = "goimports"
 let g:go_term_mode = "split"
 let g:go_term_height = 8
 
@@ -39,15 +49,22 @@ let g:deoplete#enable_at_startup = 1
 call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-let g:python3_host_prog = "C:\\Program\ Files\\Python37\\python.exe"
+
+""""""""""""""""""""""""""""""""""""""""""""""""
+" ALE Configurations
+""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ale_fixers = {
+	\ 'python': ['yapf'],
+	\}
+let g:ale_fix_on_save = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " Mundo Configurations
 """"""""""""""""""""""""""""""""""""""""""""""""
 nnoremap <F6> :MundoToggle<CR>
-set undofile
-set undodir=~\AppData\Local\nvim\undo
-set undolevels=50
+"set undofile
+"set undodir=~/.local/share/nvim/undo
+"set undolevels=50
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree Configurations
@@ -64,24 +81,24 @@ noremap <C-n> :NERDTreeToggle<CR>
 "autocmd VimEnter * exe 'NERDTree' | wincmd p
 " Automatically Close NERDTree on file close
 function! CheckLeftBuffers()
-  if tabpagenr('$') == 1
-    let i = 1
-    while i <= winnr('$')
-      if getbufvar(winbufnr(i), '&buftype') == 'help' ||
-          \ getbufvar(winbufnr(i), '&buftype') == 'quickfix' ||
-          \ exists('t:NERDTreeBufName') &&
-          \   bufname(winbufnr(i)) == t:NERDTreeBufName ||
-          \ bufname(winbufnr(i)) == '__Tag_List__'
-        let i += 1
-      else
-        break
-      endif
-    endwhile
-    if i == winnr('$') + 1
-      qall
-    endif
-    unlet i
-  endif
+	if tabpagenr('$') == 1
+		let i = 1
+		while i <= winnr('$')
+			if getbufvar(winbufnr(i), '&buftype') == 'help' ||
+			\ getbufvar(winbufnr(i), '&buftype') == 'quickfix' ||
+			\ exists('t:NERDTreeBufName') &&
+			\   bufname(winbufnr(i)) == t:NERDTreeBufName ||
+			\ bufname(winbufnr(i)) == '__Tag_List__'
+				let i += 1
+			else
+				break
+			endif
+		endwhile
+		if i == winnr('$') + 1
+			qall
+		endif
+		unlet i
+	endif
 endfunction
 autocmd BufEnter * call CheckLeftBuffers()
 
@@ -90,16 +107,18 @@ autocmd BufEnter * call CheckLeftBuffers()
 """"""""""""""""""""""""""""""""""""""""""""""""
 " Open file in new tab on <CR>
 let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("e")': ['<c-t>'],
-    \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
-    \ }
+\ 'AcceptSelection("e")': ['<c-v>'],
+\ 'AcceptSelection("v")': ['<cr>', '<2-LeftMouse>'],
+\ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " Airline Configurations
 """"""""""""""""""""""""""""""""""""""""""""""""
-let g:airline_theme='ouo'
+"let g:airline_theme='ouo'
+let g:airline_theme = 'angr'
 let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#enabled = 1
+let g:airline_exclude_preview = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " General Configuration
@@ -121,7 +140,7 @@ set hlsearch	    " highlight search matches
 set incsearch	    " search while characters are entered
 
 " search is case-insensitive by default
-set ignorecase
+"set ignorecase
 
 " Show linenumbers
 set number
@@ -155,12 +174,12 @@ set noswapfile
 " Enable syntax highlighting
 syntax on
 
-set background=dark
-
 set cursorline	" highlight current active line
 
-colorscheme kolor
-
+colorscheme onehalfdark
+"colorscheme kolor
+"let g:kolor_inverted_matchparen=1
+set background=dark
 
 """""""""""""""""""""""""""""""""""""""""""""""""
 " Text and Indentation
@@ -178,5 +197,8 @@ set si " Smart indent
 
 " modern backspace behavior
 set backspace=indent,eol,start
+
+" Set terminal mapping
+nnoremap <silent> <leader>t :8sp<CR> <bar> :terminal<CR> <bar> :set nonumber<CR>
 
 filetype indent on	" enable filetype specific indentation
